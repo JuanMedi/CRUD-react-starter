@@ -5,46 +5,49 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Textarea } from '@/components/ui/textarea';
 import AppLayout from '@/layouts/app-layout';
-import { type BreadcrumbItem } from '@/types';
 import { Head, Link, useForm } from '@inertiajs/react';
 import { CircleAlert } from 'lucide-react';
 import React from 'react';
 
+interface Product{
+    id: number,
+    name: string,
+    description: string,
+    price: number,
+    stock: number
+}
 
-const breadcrumbs: BreadcrumbItem[] = [
-    {
-        title: 'Create Product',
-        href: '/products/create',
-    },
-];
+interface Props{
+    product:Product
+}
 
-export default function Index() {
+export default function Edit({product}:Props) {
 
-    const { data, setData, post, processing, errors } = useForm({
-        name: '',
-        description: '',
-        price: '',
-        stock: ''
+    const { data, setData, put, processing, errors } = useForm({
+        name: product.name,
+        description: product.description,
+        price: String(product.price),
+        stock: String(product.stock)
     })
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleUpdate = (e: React.FormEvent) => {
         e.preventDefault();
-        post(route('products.store'))
+        put(route('products.update', product.id))
     }
 
 
 
     return (
-        <AppLayout breadcrumbs={breadcrumbs}>
-            <Head title="Create Product" />
+        <AppLayout breadcrumbs={[{title: 'Edit a Product', href:`products/${product.id}/edit`}]}>
+            <Head title="Update Product" />
             <div className='m-4 w-8/12 p-4'>
-                <form onSubmit={handleSubmit} className='space-y-5'>
+                <form onSubmit={handleUpdate} className='space-y-5'>
                     {/* Display errors */}
 
                     {Object.keys(errors).length > 0 && (
                         <Alert>
                             <CircleAlert/>
-                            <AlertTitle>¿Warning!</AlertTitle>
+                            <AlertTitle>¡Warning!</AlertTitle>
                             <AlertDescription>
                                 <ul>
                                     {Object.entries(errors).map(([key, message]) =>(
@@ -70,7 +73,7 @@ export default function Index() {
                         <Label htmlFor='product-stock'>Stock</Label>
                         <Input placeholder='Product stock' value={data.stock} onChange={(e) => setData('stock', e.target.value)}></Input>
                     </div>
-                    <Button disabled={processing} type='submit' className='my-4'>Create New Product</Button>
+                    <Button disabled={processing} type='submit' className='my-4'>Update Product</Button>
                 </form>
                 <div className='my-6'>
                     <Link href={route('products.index')}><Button> Return to Index </Button></Link>

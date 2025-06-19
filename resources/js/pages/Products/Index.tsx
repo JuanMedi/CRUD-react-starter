@@ -32,13 +32,13 @@ interface PageProps {
 
 export default function Index() {
 
-    const { products, flash } = usePage().props as PageProps;
+    const { products, flash } = (usePage().props as unknown as PageProps);
 
     const { processing, delete: destroy} = useForm();
 
     const handleDelete = (id: number, name: string) => {
     if (confirm(`Do you want to delete a product - ${id}. ${name}`)) {
-        destroy(`/products/${id}`)
+        destroy(route('products.destroy', id))
     }
 }
     return (
@@ -80,7 +80,10 @@ export default function Index() {
                                     <TableCell>{product.description}</TableCell>
                                     <TableCell>{product.price}</TableCell>
                                     <TableCell>{product.stock}</TableCell>
-                                    <TableCell><Button disabled={processing} onClick={() => handleDelete(product.id, product.name)} className='bg-red-500 hover-bg-red-700'>Delete</Button></TableCell>
+                                    <TableCell className='flex justify-center'>
+                                        <Link href={route('products.edit', product.id)}><Button className='bg-green-500 hover-bg-green-700'>Edit</Button></Link>
+                                        <Button disabled={processing} onClick={() => handleDelete(product.id, product.name)} className='bg-red-500 hover-bg-red-700'>Delete</Button>
+                                    </TableCell>
                                 </TableRow>
                             ))}
                         </TableBody>
